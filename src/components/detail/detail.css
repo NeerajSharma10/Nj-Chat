@@ -1,0 +1,101 @@
+.detail{
+    flex: 1;
+    color: black;
+    overflow: hidden;
+}
+
+.profileThings{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    gap: 10px;
+    height: 30%;
+    /* background-color: rgb(124, 124, 117); */
+    img{
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+    }
+}
+
+.profileOptions {
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 62%;
+    overflow-y: scroll;
+    scrollbar-color: rgb(212, 207, 207) rgb(23, 18, 7);
+    scrollbar-width: none;
+
+    .chatSettings{
+        background-color: rgba(27, 186, 186, 0.557);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+      
+        .optionsIcons{
+            background-color: cornflowerblue;
+            border-radius: 50%;
+        }
+    }
+}
+
+.options{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    /* background-color: blueviolet; */
+    gap: 102px;
+    img{
+        width: 30px;
+        height: 30px;
+    }
+}
+
+.blockButtonDiv{
+    /* background-color: bisque; */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 7%;
+    /* background-color: rebeccapurple; */
+
+    .blockButton{
+        width: 80%;
+        border-radius: 10px;
+        background-color: rgb(219, 216, 163);
+        cursor: pointer;
+        font-size: larger;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        height: 100%;
+    }
+
+    .blockButton:hover {
+        background-color: rgb(209, 209, 19);
+    }
+
+    .logoutButton {
+        cursor: pointer;
+        font-size: medium;
+        margin-top: 5px;
+        width: 50%;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        border-radius: 7px;
+        background-color: rgb(174, 155, 192);
+        outline: none;
+    }
+
+    .logoutButton:hover {
+        background-color: rgba(172, 18, 170, 0.449);
+    }
+}
+
+.hrtag{
+    background-color: rgba(195, 36, 36, 0.702);
+    opacity: 50%;
+}

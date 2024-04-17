@@ -1,0 +1,20 @@
+.outerContainer {
+    width: 100vw;
+    height: 100vh;
+    background-image: url('assets/pexels-francesco-ungaro-2554092.jpg');
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: aliceblue;
+    font-weight: 700;
+}
+
+.innerContainer {
+    width: 90vw;
+    height: 90vh;
+    /* background-color: rgb(144, 214, 222); */
+    opacity: 70%;
+    border: 1px solid rgba(135, 207, 235, 0.429);
+    background-image: linear-gradient(90deg, rgb(76, 78, 78), rgb(82, 164, 161));
+    display: flex;
+}
