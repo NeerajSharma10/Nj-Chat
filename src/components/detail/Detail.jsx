@@ -62,7 +62,7 @@ export const Detail = () => {
         </div>
       </div>
 
-      <hr />
+      <hr className='hrtag'/>
 
       <div className="blockButtonDiv">
         <button className='blockButton'>
