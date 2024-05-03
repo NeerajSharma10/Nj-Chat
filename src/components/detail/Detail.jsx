@@ -3,6 +3,7 @@ import './detail.css'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import SouthIcon from '@mui/icons-material/South';
+import { auth } from '../../lib/firebase';
 
 export const Detail = () => {
   return (
@@ -68,7 +69,10 @@ export const Detail = () => {
         <button className='blockButton'>
           Block User
         </button>
-        <button className='logoutButton'>
+        <button className='logoutButton' onClick={() => {
+          console.log("logout");
+          auth.signOut()
+        }}>
           Logout
         </button>
       </div>

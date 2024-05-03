@@ -1,17 +1,67 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './chatlist.css'
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import {AddUser} from '../../adduser/adduser';
+import { useUserStore } from '../../../lib/userStore';
+import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import {db} from '../../../lib/firebase'
+import { useChatStore } from '../../../lib/chatStore';
 
 const Chatlist = () => {
 
   const [plusIconToggle, setPlusIconToggle] = useState(true);
+  const {changeChat} = useChatStore()
+  const {currentUser} = useUserStore()
+  const [chats, setChats] = useState([])
 
   const plusHandler = () => {
     setPlusIconToggle(!plusIconToggle)
   }
+
+  const handleSelect = async(chat) => {
+    const userChats = chats.map((item) => {
+      const {user, ...rest} = item;
+      return rest;
+    })
+    const chatIndex = userChats.findIndex(
+      (item) => item.chatId === chat.chatId
+    );
+    userChats[chatIndex].isSeen = true
+    const userChatsRef = doc(db, "userChats", currentUser.id)
+    try {
+      await updateDoc(userChatsRef, {
+        chats: userChats
+      })
+      changeChat(chat.chatId, chat.user)
+    }catch(err) {
+      console.log("Error : " , err);
+    }
+  }
+
+  useEffect(() => {
+    
+    const unsub = onSnapshot(doc(db, "userChats", currentUser.id), async (res) => {
+        console.log("res : -> ", res);
+        const items = res.data().chats
+        const promises = items.map(async (item) => {
+          const userDocRef = doc(db, "users", item.receiverId)
+          const userDocSnap = await getDoc(userDocRef);
+          const user = userDocSnap.data()
+          return {...item, user}
+        })
+        const chatData = await Promise.all(promises)
+        setChats(chatData.sort((a,b) => b.updatedAt - a.updatedAt))
+        console.log("chats : -> " , chats);
+    });
+
+    return () => {
+      unsub()
+    }
+  }, [currentUser.id])
+
+  // console.log("chats : " , chats);
 
   return (
     <>
@@ -34,42 +84,27 @@ const Chatlist = () => {
         }
 
       <br />
-      <div className="item">
-        <img src="src/assets/1.jpg" className='imgavatar' alt="" />
-        <div className='description'>
-          <div>John Doe</div>
-          <div className='descriptionText'>My Name is John Doe</div>
-        </div>
-      </div>
-      <hr className='hrtag' />
-      <br />
-      <div className="item">
-        <img src="src/assets/2.jpg" className='imgavatar' alt="" />
-        <div className='description'>
-          <div>Mohta Ji</div>
-          <div className='descriptionText'>My Name is Harsh Mohta</div>
-        </div>
-      </div>
-      <br />
-      <hr className='hrtag' />
-      <div className="item">
-        <img src="src/assets/3.jpg" className='imgavatar' alt="" />
-        <div className='description'>
-          <div>Ranjan</div>
-          <div className='descriptionText'>Hi My Name is Ranjan</div>
-        </div>
-      </div>
-      <br />
-      <hr className='hrtag' />
-      <div className="item">
-        <img src="src/assets/4.jpg" className='imgavatar' alt="" />
-        <div className='description'>
-          <div>Pawan</div>
-          <div className='descriptionText'>Hi My Name is Pawan</div>
-        </div>
-      </div>
-      <br />
-      <hr className='hrtag' />
+
+   
+      {
+        chats.map((chat) => {
+          return (
+            <div className='chatlistPart' style={{cursor: 'pointer', backgroundColor : chat?.isSeen ? 'transparent' : 'black'}} key={chat.chatId} onClick={() => handleSelect(chat)}>
+              <div className="item">
+                <img src={chat.user.url || "src/assets/1.jpg"} className='imgavatar' alt="" />
+                <div className='description1'>
+                  <div>{chat.user.username}</div>
+                  <p className='descriptionText1'>{chat.lastMessage}</p>
+                </div>
+              </div>
+              <br />
+              <hr className='hrtag' />
+          </div>
+          )
+        })
+      }
+
+
     </>
   )
 }

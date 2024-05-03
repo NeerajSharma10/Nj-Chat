@@ -1,11 +1,15 @@
 .chatlist{
+    max-width: 100%;
     display: flex;
-    flex: 9;
     gap: 6px;
     padding: 2px;
     justify-content: center;
 }
 
+.chatlistPart{
+    max-width: 100%;
+    background-color: rgb(188, 140, 68);
+}
 
 .searchbar{
     flex: 1;
@@ -23,7 +27,7 @@
     gap: 6px;
     border-radius: 10px;
     background-color: rgb(31, 46, 95);
-
+    max-width: 100%;
 }
 
 .add{
@@ -36,6 +40,7 @@
 .search{
     padding-left: 5px;
     padding-top: 3px;
+    max-width: 100%;
 }
 
 .imgavatar{
@@ -46,6 +51,7 @@
 }
 
 .item {
+    width: 20vw;
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -58,7 +64,9 @@
     
 }
 
-.description {
+.description1 {
+    max-width: 50%;
+    /* background-color: aquamarine; */
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -71,4 +79,10 @@
     left: 50%;
     transform: translate(-50%, -50%);
     /* background-color: rgb(12, 25, 21); */
+}
+
+.descriptionText1{
+    /* background-color: rebeccapurple; */
+    max-width: 100%;
+    overflow-wrap: break-word; 
 }

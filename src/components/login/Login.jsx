@@ -1,7 +1,16 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './Login.css'
+import {auth} from '../../lib/firebase'
+import {db} from '../../lib/firebase'
+import { doc, setDoc } from "firebase/firestore"; 
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { toast } from 'react-toastify';
+import {upload} from '../../lib/upload'
+import {useUserStore} from '../../lib/userStore'
 
 export const Login = () => {
+
+    const {fetchUserInfo} = useUserStore()
 
     const [avatar, setAvatar] = useState({
         file : null,
@@ -16,8 +25,51 @@ export const Login = () => {
     }
 
 
-    const search = () => {
-        console.log("in search function!!!");
+    const handleRegister = async (e) => {
+        try{
+            e.preventDefault();
+            const {username, email, password} = e.target;
+            const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
+            
+            const imageUrl = await upload(avatar);
+
+            //entering user data in firestore
+            const user = {
+                username: username.value,
+                email: email.value,
+                url: imageUrl,
+                password: password.value,
+                id: userCredential.user.uid,
+                blocked: []
+              };
+
+            const userChat = {
+                chats: []
+            }
+
+            await setDoc(doc(db, "users", userCredential.user.uid), user);
+            await setDoc(doc(db, "userChats", userCredential.user.uid), userChat);
+
+
+            toast.success("User SignedUp Up!!!");
+        } catch(err) {
+            console.log(err);
+            toast.error("Unknow Error")
+        }
+    }
+
+    const handleLogin = async(e) => {
+        try{
+            e.preventDefault();
+            const {email, password} = e.target;
+            const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
+            toast.success("User Logged In!!!");
+        } catch(error) {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, " @ ", errorMessage);
+            toast.error("Wrong Credentials");
+        }
     }
 
     return (
@@ -25,7 +77,7 @@ export const Login = () => {
             <div className="formDiv">
                 <h2>Welcome back !!!</h2>
                 <br />
-                <form action={search} className='form'>
+                <form onSubmit={handleLogin} className='form'>
                     <input type='email' name="email" placeholder='email' />
                     <input type='password' name="password" placeholder='password' />
                     <button type="submit">Sign In</button>
@@ -35,7 +87,7 @@ export const Login = () => {
             <div className="formDiv">
                 <h2>Create an Account</h2>
                 <br />
-                <form action={search} className='form'>
+                <form onSubmit={handleRegister} className='form'>
                     <label htmlFor="uploadedImage" className='labelImage'>
                         <img src={avatar.url || "src/assets/1.jpg"} alt="" />
                         <div style={{
