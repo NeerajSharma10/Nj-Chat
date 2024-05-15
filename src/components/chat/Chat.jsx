@@ -12,6 +12,7 @@ import { useChatStore } from '../../lib/chatStore'
 import { onSnapshot, doc, arrayUnion, updateDoc, getDoc } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
 import { useUserStore } from '../../lib/userStore';
+import {upload} from '../../lib/upload'
 
 const Chat = () => {
   const [chat, setChat] = useState()
@@ -51,6 +52,7 @@ const Chat = () => {
         url : URL.createObjectURL(e.target.files[0])
       })
     }
+    console.log(img);
   }
 
   const emojiTextHandler = (emoji) => {
@@ -61,14 +63,24 @@ const Chat = () => {
 
   const sendHandler = async () => {
     if (textInsideMessage == "") return;
+
+    let imgUrl = null
+
+    if(img.file) {
+      imgUrl = await upload(img.file)
+    }
+
     try {
       await updateDoc(doc(db, "chats", chatId), {
         messages: arrayUnion({
           senderId: currentUser.id,
           text: textInsideMessage,
           createdAt: new Date(),
+          ...(imgUrl && {img: imgUrl}),
         })
       })
+
+      console.log("imgUrl", imgUrl);
 
       const userIds = [currentUser.id, user.id]
 
@@ -89,10 +101,16 @@ const Chat = () => {
 
         }
       })
+      console.log("bb", img);
+      setImg({
+        file: null,
+        url: ""
+      });
+
       setTextInsideMessage("")
 
     } catch (err) {
-      console.log(err);
+      console.log("xxx", err);
     }
   }
 
@@ -116,8 +134,9 @@ const Chat = () => {
 
 
       <div className="center">
-        {
 
+        {
+          console.log(chat?.messages)
         }
 
         {
@@ -126,8 +145,8 @@ const Chat = () => {
               <div key={message.createdAt} className={message.senderId === currentUser.id ? "ownMessage": "sendMessage"}>
                
 
-                  {message.image && <div >
-                    <img className="uploadedImage" src={message.image} alt="" />
+                  {message.img && <div >
+                    <img className="uploadedImage" src={message.img} alt="" />
                   </div>
                   }
 
@@ -141,6 +160,12 @@ const Chat = () => {
             )
           })
         }
+         {
+            img.url && 
+            <div className="ownMessageInside">
+              <img src={img.url} alt="" /> 
+            </div>  
+          }
         <div ref={endRef}></div>
       </div>
 
@@ -148,7 +173,10 @@ const Chat = () => {
       <hr className='hrtag' />
       <div className="bottom">
         <div className="iconsbar">
-          <DriveFolderUploadIcon />
+          <label htmlFor="file">
+            <DriveFolderUploadIcon style={{cursor:'pointer'}}/>
+          </label>
+          <input type="file" id='file' style={{display:"none"}}  onChange={handleImg}/>
           <CameraAltIcon />
           <KeyboardVoiceIcon />
         </div>
